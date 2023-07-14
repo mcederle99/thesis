@@ -17,10 +17,11 @@ class CriticNetwork(nn.Module):
 
         fc_input_dims = self.calculate_conv_output_dims(input_dims)
 
-        self.fc1 = nn.Linear(fc_input_dims, 512)
-        self.q = nn.Linear(512, 16)
+        self.fc1 = nn.Linear(fc_input_dims, 64)
+        self.fc2 = nn.Linear(64, 64)
+        self.q = nn.Linear(64, 1)
 
-        self.optimizer = optim.RMSprop(self.parameters(), lr=beta)
+        self.optimizer = optim.Adam(self.parameters(), lr=beta)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
@@ -29,25 +30,27 @@ class CriticNetwork(nn.Module):
         dims = self.conv1(state)
         dims = self.conv2(dims)
         dims = self.conv3(dims)
-        return int(np.prod(dims.size()))
+        return int(np.prod(dims.size()) + 6)
 
-    def forward(self, state):
+    def forward(self, state, actions):
         layer1 = F.relu(self.conv1(state))
         layer2 = F.relu(self.conv2(layer1))
         layer3 = F.relu(self.conv3(layer2))
         layer4 = layer3.view(layer3.size()[0], -1)
+        layer4 = T.cat((layer4, actions), dim=1) 
         layer4 = F.relu(self.fc1(layer4))
-        out = self.q(layer4)
+        layer5 = F.relu(self.fc2(layer4))
+        out = self.q(layer5)
 
         return out
 
     def save_checkpoint(self):
         print('... saving checkpoint ...')
-        T.save(self.state_dict(), self.checkpoint_file)
+        T.save(self.state_dict(), self.chkpt_file)
 
     def load_checkpoint(self):
         print('... loading checkpoint ...')
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.chkpt_file))
 
 class ActorNetwork(nn.Module):
     def __init__(self, alpha, input_dims, n_actions, name, chkpt_dir):
@@ -64,7 +67,7 @@ class ActorNetwork(nn.Module):
         self.fc1 = nn.Linear(fc_input_dims, 512)
         self.pi = nn.Linear(512, n_actions)
 
-        self.optimizer = optim.RMSprop(self.parameters(), lr=alpha)
+        self.optimizer = optim.Adam(self.parameters(), lr=alpha)
         self.device = T.device('cuda:0' if T.cuda.is_available() else 'cpu')
         self.to(self.device)
 
@@ -87,8 +90,8 @@ class ActorNetwork(nn.Module):
 
     def save_checkpoint(self):
         print('... saving checkpoint ...')
-        T.save(self.state_dict(), self.checkpoint_file)
+        T.save(self.state_dict(), self.chkpt_file)
 
     def load_checkpoint(self):
         print('... loading checkpoint ...')
-        self.load_state_dict(T.load(self.checkpoint_file))
+        self.load_state_dict(T.load(self.chkpt_file))

@@ -3,6 +3,23 @@ import torch as T
 import torch.nn.functional as F
 from maddpg1.networks_conv import ActorNetwork, CriticNetwork
 
+def mapping(actions):
+    actions = T.sign(actions)
+    new_actions = np.zeros(32, dtype=int)
+    for i in range(32):
+        if actions[i][0] == -1:
+            if actions[i][1] == -1:
+                new_actions[i] = 0
+            else:
+                new_actions[i] = 1
+        else:
+            if actions[i][1] == -1:
+                new_actions[i] = 2
+            else:
+                new_actions[i] = 3
+
+    return new_actions
+
 class Agent:
     def __init__(self, actor_dims, critic_dims, n_actions,
                 n_agents, agent_idx, chkpt_dir, min_action,
@@ -96,28 +113,45 @@ class Agent:
             new_actions = T.cat([agent.target_actor(actor_new_states[idx])
                                  for idx, agent in enumerate(agent_list)],
                                  dim=1)
+            #new_actions_1 = mapping(new_actions) 
             critic_value_ = self.target_critic.forward(
                                 states_, new_actions).squeeze()
+            #tmp = T.tensor(np.zeros(32), device='cuda:0')
+            #for i in range(32):
+            #    tmp[i] = critic_value_[i][new_actions_1[i]]
+            #critic_value_ = tmp
             critic_value_[dones[:, self.agent_idx]] = 0.0
             target = rewards[:, self.agent_idx] + self.gamma * critic_value_
 
         old_actions = T.cat([actions[idx] for idx in range(len(agent_list))],
                             dim=1)
+        #old_actions_1 = mapping(old_actions)
         critic_value = self.critic.forward(states, old_actions).squeeze()
+        #tmp = T.tensor(np.zeros(32), device='cuda:0')
+        #for i in range(32):
+        #    tmp[i] = critic_value[i][old_actions_1[i]]
+        #critic_value = tmp
+
         critic_loss = F.mse_loss(target, critic_value)
 
         self.critic.optimizer.zero_grad()
         critic_loss.backward()
-        T.nn.utils.clip_grad_norm_(self.critic.parameters(), 10.0)
+        T.nn.utils.clip_grad_norm_(self.critic.parameters(), 0.5)
         self.critic.optimizer.step()
 
         actions[self.agent_idx] = self.actor.forward(
                 actor_states[self.agent_idx])
         actions = T.cat([actions[i] for i in range(len(agent_list))], dim=1)
         actor_loss = -self.critic.forward(states, actions).mean()
+        #actions_1 = mapping(actions)
+        #tmp = T.tensor(np.zeros(32), device='cuda:0')
+        #for i in range(32):
+        #    tmp[i] = actor_loss[i][actions_1[i]]
+        #actor_loss = tmp
+        #actor_loss = -actor_loss.mean()
         self.actor.optimizer.zero_grad()
         actor_loss.backward()
-        T.nn.utils.clip_grad_norm_(self.actor.parameters(), 10.0)
+        T.nn.utils.clip_grad_norm_(self.actor.parameters(), 0.5)
         self.actor.optimizer.step()
 
         self.update_network_parameters()

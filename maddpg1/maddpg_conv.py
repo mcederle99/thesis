@@ -8,7 +8,7 @@ class MADDPG:
         chkpt_dir += scenario
         for agent_idx in range(n_agents):
             #agent = list(env.action_spaces.keys())[agent_idx]
-            min_action = -1 #env.action_space(agent).low
+            min_action = 0 #env.action_space(agent).low
             max_action = 1#env.action_space(agent).high
             self.agents.append(Agent(actor_dims[agent_idx], critic_dims,
                                n_actions[agent_idx], n_agents, agent_idx,

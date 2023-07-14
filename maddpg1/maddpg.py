@@ -3,13 +3,13 @@ from maddpg1.agent import Agent
 class MADDPG:
     def __init__(self, actor_dims, critic_dims, n_agents, n_actions, env,
                  alpha=1e-4, beta=1e-3, fc1=64, fc2=64, gamma=0.95, tau=0.01,
-                 chkpt_dir='results/maddpg1', scenario='2agents_nohd'):
+                 chkpt_dir='results/maddpg1/', scenario='2agents_nohd'):
         self.agents = []
         chkpt_dir += scenario
         for agent_idx in range(n_agents):
             #agent = list(env.action_spaces.keys())[agent_idx]
-            min_action = 0 #env.action_space(agent).low
-            max_action = 4#env.action_space(agent).high
+            min_action = -1 #env.action_space(agent).low
+            max_action = 1#env.action_space(agent).high
             self.agents.append(Agent(actor_dims[agent_idx], critic_dims,
                                n_actions[agent_idx], n_agents, agent_idx,
                                alpha=alpha, beta=beta, tau=tau, fc1=fc1,
@@ -18,6 +18,7 @@ class MADDPG:
                                max_action=max_action))
 
     def save_checkpoint(self):
+        print('... saving checkpoint ...')
         for agent in self.agents:
             agent.save_models()
 

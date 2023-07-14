@@ -94,7 +94,7 @@ class Agent:
                    for idx in range(len(agent_list))]
 
         with T.no_grad():
-            new_actions = T.cat([agent.target_actor(actor_new_states[idx])
+            new_actions = T.cat([agent.target_actor.forward(actor_new_states[idx])
                                  for idx, agent in enumerate(agent_list)],
                                  dim=1)
             critic_value_ = self.target_critic.forward(
