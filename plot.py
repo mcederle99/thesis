@@ -26,8 +26,8 @@ def plot_learning_curve(x, scores, filename, lines=None):
 
     plt.savefig(filename)
     
-maddpg_scores = np.load('maddpg_scores.npy')
-maddpg_steps = np.load('maddpg_steps.npy')
+maddpg_scores = np.load('maddpg_2_scores.npy')
+maddpg_steps = np.load('maddpg_2_steps.npy')
 
 plot_learning_curve(x=maddpg_steps,
                     scores=maddpg_scores,
