@@ -159,7 +159,10 @@ if __name__ == '__main__':
     best_score = 0
     eval_scores = []
     eval_steps = []
-    
+    test = True
+    if test:
+        while True:
+            score = evaluate(maddpg_agents, env, episode, total_steps)
     score = evaluate(maddpg_agents, env, episode, total_steps)
     eval_scores.append(score)
     eval_steps.append(total_steps)
