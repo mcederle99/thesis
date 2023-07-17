@@ -1,0 +1,39 @@
+Failure # 1 (occurred at 2023-07-17_09-08-14)
+The actor died because of an error raised in its creation task, [36mray::PG.__init__()[39m (pid=5921, ip=147.162.14.67, actor_id=09488a9e9889a68255cffcd701000000, repr=PG)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/algorithms/algorithm.py", line 475, in __init__
+    super().__init__(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/tune/trainable/trainable.py", line 170, in __init__
+    self.setup(copy.deepcopy(self.config))
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/algorithms/algorithm.py", line 601, in setup
+    self.workers = WorkerSet(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/worker_set.py", line 172, in __init__
+    self._setup(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/worker_set.py", line 262, in _setup
+    self._local_worker = self._make_worker(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/worker_set.py", line 967, in _make_worker
+    worker = cls(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/rollout_worker.py", line 738, in __init__
+    self._update_policy_map(policy_dict=self.policy_dict)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/rollout_worker.py", line 1985, in _update_policy_map
+    self._build_policy_map(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/evaluation/rollout_worker.py", line 2097, in _build_policy_map
+    new_policy = create_policy_for_framework(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/utils/policy.py", line 142, in create_policy_for_framework
+    return policy_class(observation_space, action_space, merged_config)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/algorithms/pg/pg_torch_policy.py", line 48, in __init__
+    self._initialize_loss_from_dummy_batch()
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/policy/policy.py", line 1408, in _initialize_loss_from_dummy_batch
+    actions, state_outs, extra_outs = self.compute_actions_from_input_dict(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy_v2.py", line 526, in compute_actions_from_input_dict
+    return self._compute_action_helper(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/utils/threading.py", line 24, in wrapper
+    return func(self, *a, **k)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/policy/torch_policy_v2.py", line 1159, in _compute_action_helper
+    dist_inputs, state_out = self.model(input_dict, state_batches, seq_lens)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/models/modelv2.py", line 259, in __call__
+    res = self.forward(restored, state or [], seq_lens)
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/models/torch/complex_input_net.py", line 202, in forward
+    SampleBatch.OBS: one_hot(
+  File "/home/matteocederle/anaconda3/envs/venv/lib/python3.8/site-packages/ray/rllib/utils/torch_utils.py", line 555, in one_hot
+    return nn.functional.one_hot(x.long(), space.n)
+TypeError: one_hot(): argument 'num_classes' (position 2) must be int, not numpy.int64
