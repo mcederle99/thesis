@@ -1,1 +1,0 @@
-{"type": "Algorithm", "checkpoint_version": "1.1", "format": "cloudpickle", "state_file": "/home/matteocederle/ray_results/QMIX/QMIX_grouped_twostep_5d776_00000_0_2023-07-17_09-13-01/checkpoint_000041/algorithm_state.pkl", "policy_ids": ["default_policy"], "ray_version": "2.5.1", "ray_commit": "a03efd9931128d387649dd48b0e4864b43d3bfb4"}
